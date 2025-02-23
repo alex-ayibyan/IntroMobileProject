@@ -24,7 +24,7 @@ const MapComponent = ({ initialRegion, sightings }: MapComponentProps) => {
               longitude: sighting.location.longitude,
             }}
             onPress={() =>
-              navigation.navigate('DetailScreen')
+              navigation.navigate('SightingDetail', { sightingId: sighting.id })
             }
           />
         ))}

@@ -54,7 +54,7 @@ function RootLayoutNav() {
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen
-          name="DetailScreen"
+          name="SightingDetail"
           options={{
             title: 'Sighting Details',
             headerLeft: () => (
