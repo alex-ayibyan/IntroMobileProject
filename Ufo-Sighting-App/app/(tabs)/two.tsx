@@ -28,7 +28,6 @@ export default function TabTwoScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>List of Sightings</Text>
       <FlatList
         data={sightings}
         keyExtractor={(item) => item.id.toString()}
@@ -56,6 +55,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 16,
+    color: '#ffffff',
   },
   item: {
     padding: 10,
@@ -64,6 +64,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   itemText: {
-    fontSize: 16,
+    fontSize: 20,
+    fontWeight: 'bold',
   },
 });
