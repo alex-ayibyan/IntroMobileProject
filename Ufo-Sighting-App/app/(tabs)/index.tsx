@@ -11,8 +11,8 @@ import { StackNavigationProp } from '@react-navigation/stack';
 type NavigationProps = StackNavigationProp<RootStackParamList, 'TabLayout'>;
 
 const initialRegion: Region = {
-  latitude: 100,
-  longitude: 50,
+  latitude: 50.85,
+  longitude: 4.35,
   latitudeDelta: 1,
   longitudeDelta: 0.5,
 };
