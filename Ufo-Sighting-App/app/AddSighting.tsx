@@ -3,10 +3,12 @@ import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { Sighting } from '../constants/Api';
+import { Picker } from '@react-native-picker/picker';
 
 export default function AddSighting() {
   const [witnessName, setWitnessName] = useState<string>('');
   const [witnessContact, setWitnessContact] = useState<string>('');
+  const [status, setStatus] = useState<'Confirmed' | 'Unconfirmed'>('Unconfirmed');
   const [title, setTitle] = useState<string>('');
 
   const navigation = useNavigation();
@@ -28,13 +30,13 @@ export default function AddSighting() {
         witnessName,
         description: title,
         picture: '',
+        status,
         dateTime: new Date().toISOString(),
         witnessContact,
         location: {
           latitude: 0,
           longitude: 0
-        },
-        status: ''
+        }
       };
 
       sightings.push(newSighting);
@@ -71,6 +73,17 @@ export default function AddSighting() {
         onChangeText={setTitle}
       />
 
+      <View style={styles.input}>
+        <Picker
+          selectedValue={status}
+          onValueChange={(itemValue) => setStatus(itemValue)}
+          dropdownIconColor="#000"
+        >
+          <Picker.Item label="Unconfirmed" value="Unconfirmed" />
+          <Picker.Item label="Confirmed" value="Confirmed" />
+        </Picker>
+      </View>
+
       <Button title="Save Sighting" onPress={saveSighting} />
     </View>
   );
@@ -79,7 +92,7 @@ export default function AddSighting() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10,
+    padding: 10
   },
   title: {
     fontSize: 24,

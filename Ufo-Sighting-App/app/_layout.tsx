@@ -65,7 +65,7 @@ function RootLayoutNav() {
         <Stack.Screen
           name="AddSighting"
           options={{
-            title: 'Rapport a sighting',
+            title: 'Report a sighting',
             headerLeft: () => (
               <Button title="Go back" onPress={() => { router.back(); }} />
             ),
