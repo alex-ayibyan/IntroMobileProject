@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import MapView, { Marker, MapPressEvent } from 'react-native-maps';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { Sighting } from '../constants/Api';
@@ -10,11 +11,16 @@ export default function AddSighting() {
   const [witnessContact, setWitnessContact] = useState<string>('');
   const [status, setStatus] = useState<'Confirmed' | 'Unconfirmed'>('Unconfirmed');
   const [title, setTitle] = useState<string>('');
+  const [location, setLocation] = useState<{ latitude: number; longitude: number } | null>(null);
 
   const navigation = useNavigation();
 
+  const handleMapPress = (event: MapPressEvent) => {
+    setLocation(event.nativeEvent.coordinate);
+  };
+
   const saveSighting = async () => {
-    if (!title || !witnessName || !witnessContact) {
+    if (!title || !witnessName || !witnessContact || !location) {
       Alert.alert('Missing Information', 'Please fill in all fields and select a location.');
       return;
     }
@@ -28,15 +34,15 @@ export default function AddSighting() {
       const newSighting: Sighting = {
         id: nextId,
         witnessName,
+        location: {
+          latitude: location.latitude,
+          longitude: location.longitude,
+        },
         description: title,
         picture: '',
         status,
         dateTime: new Date().toISOString(),
         witnessContact,
-        location: {
-          latitude: 0,
-          longitude: 0
-        }
       };
 
       sightings.push(newSighting);
@@ -84,6 +90,19 @@ export default function AddSighting() {
         </Picker>
       </View>
 
+      <MapView
+        style={styles.map}
+        initialRegion={{
+          latitude: 50,
+          longitude: 5,
+          latitudeDelta: 5,
+          longitudeDelta: 5,
+        }}
+        onPress={handleMapPress}
+      >
+        {location && <Marker coordinate={location} />}
+      </MapView>
+
       <Button title="Save Sighting" onPress={saveSighting} />
     </View>
   );
@@ -106,5 +125,10 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 10,
     color: '#ffffff',
-  }
+  },
+  map: {
+    height: 250,
+    marginBottom: 10,
+  },
+
 });
