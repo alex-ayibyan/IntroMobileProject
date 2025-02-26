@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Sighting } from '../constants/Api';
 import { Picker } from '@react-native-picker/picker';
 import { Camera, CameraView } from 'expo-camera';
-import * as FileSystem from 'expo-file-system'; // to save images locally
+import * as FileSystem from 'expo-file-system';
 
 export default function AddSighting() {
   const [witnessName, setWitnessName] = useState<string>('');
@@ -52,12 +52,46 @@ export default function AddSighting() {
     setIsCameraVisible(false);
   };
 
+  const checkSavedSightings = async () => {
+    try {
+      const storedSightings = await AsyncStorage.getItem('sightings');
+      if (storedSightings) {
+        console.log('Saved Sightings:', JSON.parse(storedSightings));
+        Alert.alert('Check Console', 'Sightings have been logged in the console.');
+      } else {
+        Alert.alert('No Sightings', 'No sightings found in storage.');
+      }
+    } catch (error) {
+      console.error('Error retrieving sightings:', error);
+    }
+  };
+
+  const clearStorage = async () => {
+    try {
+      await AsyncStorage.clear();
+      console.log('AsyncStorage cleared!');
+    } catch (error) {
+      console.error('Error clearing AsyncStorage:', error);
+    }
+  };
+
   const takePicture = async () => {
     if (cameraRef.current) {
       const photo = await cameraRef.current.takePictureAsync();
       if (photo) {
-        setPhotoUri(photo.uri);
-        closeCamera();
+        const fileUri = FileSystem.documentDirectory + `sighting_${Date.now()}.jpg`;
+  
+        try {
+          await FileSystem.moveAsync({
+            from: photo.uri,
+            to: fileUri,
+          });
+  
+          setPhotoUri(fileUri);
+          closeCamera();
+        } catch (error) {
+          console.error('Error saving photo:', error);
+        }
       }
     }
   };
@@ -67,15 +101,19 @@ export default function AddSighting() {
       Alert.alert('Missing Information', 'Please fill in all fields and select a location.');
       return;
     }
-
+  
     try {
       const storedSightings = await AsyncStorage.getItem('sightings');
-      const sightings = storedSightings ? JSON.parse(storedSightings) : [];
-
-      const nextId = sightings.length > 0 ? sightings[sightings.length - 1].id + 1 : 1;
-
+      const localSightings: Sighting[] = storedSightings ? JSON.parse(storedSightings) : [];
+  
+      const MIN_LOCAL_ID = 11;
+  
+      const maxLocalId = localSightings.length > 0 ? Math.max(...localSightings.map(s => s.id)) : MIN_LOCAL_ID - 1;
+  
+      const newSightingId = maxLocalId + 1;
+  
       const newSighting: Sighting = {
-        id: nextId,
+        id: newSightingId,
         witnessName,
         location: {
           latitude: location.latitude,
@@ -87,16 +125,17 @@ export default function AddSighting() {
         dateTime: new Date().toISOString(),
         witnessContact,
       };
-
-      sightings.push(newSighting);
-      await AsyncStorage.setItem('sightings', JSON.stringify(sightings));
-
+  
+      localSightings.push(newSighting);
+      await AsyncStorage.setItem('sightings', JSON.stringify(localSightings));
+  
       Alert.alert('Success', 'Sighting added successfully!');
       navigation.goBack();
     } catch (error) {
       console.error('Error saving sighting:', error);
     }
   };
+  
 
   return (
     <View style={styles.container}>
@@ -168,6 +207,8 @@ export default function AddSighting() {
       )}
 
       <Button title="Save Sighting" onPress={saveSighting} />
+      <Button title="Check Saved Sightings" onPress={checkSavedSightings} />
+      <Button title="Clear Storage" onPress={clearStorage} />
     </View>
   );
 }

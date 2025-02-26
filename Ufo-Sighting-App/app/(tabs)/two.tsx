@@ -1,26 +1,37 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, FlatList } from 'react-native';
 import { getSightings, Sighting } from '../../constants/Api';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../constants/Types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type NavigationProps = StackNavigationProp<RootStackParamList, 'TabLayout'>;
+
+const fetchAllSightings = async () => {
+  const apiSightings = await getSightings();
+  const storedSightings = await AsyncStorage.getItem('sightings');
+  const localSightings = storedSightings ? JSON.parse(storedSightings) : [];
+  return [...apiSightings, ...localSightings];
+};
 
 export default function TabTwoScreen() {
   const [sightings, setSightings] = useState<Sighting[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const navigation = useNavigation<NavigationProps>();
 
-  useEffect(() => {
-    const fetchSightings = async () => {
-      const fetchedSightings = await getSightings();
-      setSightings(fetchedSightings);
-      setLoading(false);
-    };
-
-    fetchSightings();
+  const loadSightings = useCallback(async () => {
+    setLoading(true);
+    const allSightings = await fetchAllSightings();
+    setSightings(allSightings);
+    setLoading(false);
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadSightings();
+    }, [loadSightings])
+  );
 
   if (loading) {
     return <Text>Loading...</Text>;
@@ -50,12 +61,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 16,
-    color: '#ffffff',
   },
   item: {
     padding: 10,
