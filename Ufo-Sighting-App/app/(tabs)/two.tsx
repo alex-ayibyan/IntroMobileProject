@@ -12,7 +12,14 @@ const fetchAllSightings = async () => {
   const apiSightings = await getSightings();
   const storedSightings = await AsyncStorage.getItem('sightings');
   const localSightings = storedSightings ? JSON.parse(storedSightings) : [];
-  return [...apiSightings, ...localSightings];
+
+  const allSightings = [...apiSightings, ...localSightings];
+
+  const uniqueSightings = Array.from(
+    new Map(allSightings.map(sighting => [sighting.id, sighting])).values()
+  );
+
+  return uniqueSightings;
 };
 
 export default function TabTwoScreen() {
@@ -41,7 +48,7 @@ export default function TabTwoScreen() {
     <View style={styles.container}>
       <FlatList
         data={sightings}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => `${item.id}`}
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.item}

@@ -51,23 +51,37 @@ function RootLayoutNav() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
+      <Stack
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: colorScheme === 'dark' ? '#121212' : '#007AFF', 
+          },
+          headerTitleStyle: {
+            fontSize: 20,
+            fontWeight: 'bold',
+            color: colorScheme === 'dark' ? '#FFF' : '#FFF', 
+            fontFamily: '',
+          },
+          headerTitleAlign: 'center',
+          headerTintColor: '#FFF',
+        }}
+      >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen
           name="SightingDetail"
           options={{
             title: 'Sighting Details',
             headerLeft: () => (
-              <Button title="Go back" onPress={() => { router.back(); }} />
+              <Button title="Go back" color="#FFF" onPress={() => { router.back(); }} />
             ),
           }}
         />
         <Stack.Screen
           name="AddSighting"
           options={{
-            title: 'Report a sighting',
+            title: 'Report a Sighting',
             headerLeft: () => (
-              <Button title="Go back" onPress={() => { router.back(); }} />
+              <Button title="Go back" color="#FFF" onPress={() => { router.back(); }} />
             ),
           }}
         />
@@ -75,3 +89,4 @@ function RootLayoutNav() {
     </ThemeProvider>
   );
 }
+

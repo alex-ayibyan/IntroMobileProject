@@ -14,15 +14,22 @@ type NavigationProps = StackNavigationProp<RootStackParamList, 'TabLayout'>;
 const initialRegion: Region = {
   latitude: 50.85,
   longitude: 4.35,
-  latitudeDelta: 1,
-  longitudeDelta: 0.5,
+  latitudeDelta: 40,
+  longitudeDelta: 40,
 };
 
 const fetchAllSightings = async () => {
   const apiSightings = await getSightings();
   const storedSightings = await AsyncStorage.getItem('sightings');
   const localSightings = storedSightings ? JSON.parse(storedSightings) : [];
-  return [...apiSightings, ...localSightings];
+
+  const allSightings = [...apiSightings, ...localSightings];
+  
+  const uniqueSightings = Array.from(
+    new Map(allSightings.map(sighting => [sighting.id, sighting])).values()
+  );
+
+  return uniqueSightings;
 };
 
 export default function TabOneScreen() {
