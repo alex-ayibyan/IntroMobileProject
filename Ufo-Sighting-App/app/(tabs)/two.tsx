@@ -67,16 +67,17 @@ export default function TabTwoScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    padding: 20,
   },
   item: {
-    padding: 10,
-    backgroundColor: '#f0f0f0',
+    padding: 14,
+    backgroundColor: '#013a63',
     marginBottom: 10,
     borderRadius: 8,
   },
   itemText: {
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: 'bold',
+    color: '#fdfffc',
   },
 });

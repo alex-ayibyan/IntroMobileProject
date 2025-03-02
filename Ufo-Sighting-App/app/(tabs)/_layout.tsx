@@ -1,10 +1,7 @@
 import React from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Tabs } from 'expo-router';
-
-import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
-import { useClientOnlyValue } from '@/components/useClientOnlyValue';
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
@@ -19,33 +16,38 @@ export default function TabLayout() {
 
   return (
     <Tabs
-    screenOptions={{
-      headerStyle: {
-        backgroundColor: colorScheme === 'dark' ? '#121212' : '#007AFF', 
-      },
-      headerTitleStyle: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: colorScheme === 'dark' ? '#FFF' : '#FFF', 
-        fontFamily: '',
-      },
-      headerTitleAlign: 'center',
-      headerTintColor: '#FFF',
-    }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Map',
-          tabBarIcon: ({ color }) => <TabBarIcon name="map" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="two"
-        options={{
-          title: 'List',
-          tabBarIcon: ({ color }) => <TabBarIcon name="list" color={color} />,
-        }}
-      />
-    </Tabs>
+  screenOptions={{
+    tabBarActiveTintColor: colorScheme === 'light' ? '' : '#fdfffc', // tab icon
+    tabBarInactiveTintColor: colorScheme === 'light' ? '' : '#6c757d', // Grey for inactive tab
+    tabBarStyle: {
+      backgroundColor: colorScheme === 'light' ? '' : '#013a63', // tab bar
+    },
+    headerStyle: {
+      backgroundColor: colorScheme === 'light' ? '' : '#013a63', // header bar
+    },
+    headerTitleStyle: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      marginBottom: 10,
+      color: colorScheme === 'light' ? '' : '#fdfffc', // header title
+    },
+    headerTintColor: '#FFF',
+  }}
+>
+  <Tabs.Screen
+    name="index"
+    options={{
+      title: 'Map',
+      tabBarIcon: ({ color }) => <TabBarIcon name="map" color={color} />,
+    }}
+  />
+  <Tabs.Screen
+    name="two"
+    options={{
+      title: 'List',
+      tabBarIcon: ({ color }) => <TabBarIcon name="list" color={color} />,
+    }}
+  />
+</Tabs>
   );
 }

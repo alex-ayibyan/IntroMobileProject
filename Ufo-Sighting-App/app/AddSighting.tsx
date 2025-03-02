@@ -45,10 +45,6 @@ export default function AddSighting() {
     setIsMapVisible(true);
   };
 
-  const closeMap = () => {
-    setIsMapVisible(false);
-  };
-
   function openCamera() {
     setIsCameraVisible(true);
   }
@@ -174,23 +170,19 @@ export default function AddSighting() {
     }
 };
 
-  
-
-
-  
   return (
       <View style={styles.container}>
         <TextInput
           placeholder="Enter witness name"
           style={styles.input}
-          placeholderTextColor="#888"
+          placeholderTextColor="#fdfffc"
           value={witnessName}
           onChangeText={setWitnessName}
         />
         <TextInput
           placeholder="Enter witness email"
           style={styles.input}
-          placeholderTextColor="#888"
+          placeholderTextColor="#fdfffc"
           value={witnessContact}
           onChangeText={setWitnessContact}
           keyboardType="email-address"
@@ -198,7 +190,7 @@ export default function AddSighting() {
         <TextInput
           placeholder="Enter sighting description"
           style={styles.input}
-          placeholderTextColor="#888"
+          placeholderTextColor="#fdfffc"
           value={title}
           onChangeText={setTitle}
         />
@@ -211,7 +203,7 @@ export default function AddSighting() {
           setValue={setStatus}
           setItems={setItems}
           style={styles.dropdown}
-          textStyle={{ color: "#FFF" }}
+          textStyle={{ color: "#fdfffc" }}
           placeholder="Select Status"
           dropDownContainerStyle={styles.dropdownContainer}
         />
@@ -234,11 +226,11 @@ export default function AddSighting() {
   
         <CustomButton title="Open Camera" onPress={openCamera} />
         {isCameraVisible && hasPermission === true && (
-          <View style={styles.cameraContainer}>
-            <CameraView style={styles.camera} facing='back' ref={cameraRef}>
-              <CustomButton title="Take Picture" onPress={takePicture} />
-            </CameraView>
-          </View>
+          <><View style={styles.cameraContainer}>
+          <CameraView style={styles.camera} facing='back' ref={cameraRef}>
+          </CameraView>
+        </View><CustomButton title="Take Picture" onPress={takePicture} /></>
+          
         )}
   
         {photoUri && (
@@ -264,43 +256,43 @@ export default function AddSighting() {
   const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#121212',
+      backgroundColor: 'white',
       padding: 20,
     },
     title: {
       fontSize: 24,
       fontWeight: 'bold',
-      color: '#FFF',
+      color: '#fdfffc',
       marginBottom: 15,
       textAlign: 'center',
     },
     input: {
       borderWidth: 1,
-      borderColor: '#444',
+      borderColor: '#013a63',
       borderRadius: 8,
       padding: 12,
       marginBottom: 10,
-      color: '#FFF',
-      backgroundColor: '#222',
+      color: '#fdfffc',
+      backgroundColor: '#6c757d',
     },
     dropdown: {
-      backgroundColor: "#333",
-      borderColor: "#444",
+      backgroundColor: "#6c757d",
+      borderColor: "#013a63",
       borderRadius: 8,
       marginBottom: 10,
     },
     dropdownContainer: {
-      backgroundColor: "#444",
+      backgroundColor: "#6c757d",
     },
     button: {
-      backgroundColor: '#007AFF',
+      backgroundColor: '#013a63',
       paddingVertical: 14,
       borderRadius: 8,
       alignItems: 'center',
       marginVertical: 5,
     },
     buttonText: {
-      color: '#FFF',
+      color: '#fdfffc',
       fontSize: 16,
       fontWeight: 'bold',
     },
@@ -324,7 +316,7 @@ export default function AddSighting() {
     },
     photoText: {
       fontSize: 16,
-      color: '#FFF',
+      color: '#fdfffc',
       marginBottom: 5,
     },
     photo: {

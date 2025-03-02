@@ -5,7 +5,6 @@ import { router, Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
-
 import { useColorScheme } from '@/components/useColorScheme';
 import { Button } from 'react-native';
 
@@ -30,11 +29,13 @@ export default function RootLayout() {
 
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
-    if (error) throw error;
+    if (error) 
+      throw error;
   }, [error]);
 
   useEffect(() => {
     if (loaded) {
+      console.log("Fonts loaded, hiding splash screen...");
       SplashScreen.hideAsync();
     }
   }, [loaded]);
@@ -50,20 +51,20 @@ function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={colorScheme === 'light' ? DarkTheme : DefaultTheme}>
       <Stack
         screenOptions={{
           headerStyle: {
-            backgroundColor: colorScheme === 'dark' ? '#121212' : '#007AFF', 
+            backgroundColor: colorScheme === 'light' ? '' : '#013a63', // header bar
           },
           headerTitleStyle: {
             fontSize: 20,
             fontWeight: 'bold',
-            color: colorScheme === 'dark' ? '#FFF' : '#FFF', 
+            color: colorScheme === 'light' ? '' : '#fdfffc', // header title
             fontFamily: '',
           },
           headerTitleAlign: 'center',
-          headerTintColor: '#FFF',
+          headerTintColor: '#fdfffc',
         }}
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -72,7 +73,7 @@ function RootLayoutNav() {
           options={{
             title: 'Sighting Details',
             headerLeft: () => (
-              <Button title="Go back" color="#FFF" onPress={() => { router.back(); }} />
+              <Button title="Go back" color="#fdfffc" onPress={() => { router.back(); }} />
             ),
           }}
         />
@@ -81,7 +82,7 @@ function RootLayoutNav() {
           options={{
             title: 'Report a Sighting',
             headerLeft: () => (
-              <Button title="Go back" color="#FFF" onPress={() => { router.back(); }} />
+              <Button title="Go back" color="#fdfffc" onPress={() => { router.back(); }} />
             ),
           }}
         />

@@ -18,7 +18,7 @@ const SightingDetailScreen = () => {
 const styles = StyleSheet.create({
   screenContainer: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: 'white',
   },
 });
 

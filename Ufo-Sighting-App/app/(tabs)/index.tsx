@@ -55,7 +55,7 @@ export default function TabOneScreen() {
   };
 
   if (loading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
+    return <ActivityIndicator size="large" color="#0000f" />;
   }
 
   return (
@@ -66,6 +66,7 @@ export default function TabOneScreen() {
         <Ionicons name="add" size={32} color="white" />
       </TouchableOpacity>
     </View>
+    
   );
 }
 
@@ -77,7 +78,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 20,
     right: 20,
-    backgroundColor: '#007bff',
+    backgroundColor: '#024F79',
     width: 60,
     height: 60,
     borderRadius: 30,
