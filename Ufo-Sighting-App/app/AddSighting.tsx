@@ -100,75 +100,88 @@ export default function AddSighting() {
 
   const isSavingRef = useRef(false);
 
+  const validateEmail = (email: string) => {
+    const emailCheck = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailCheck.test(email);
+  };
+  
   const saveSighting = async () => {
     if (isSavingRef.current) {
-        console.log("Duplicate prevention triggered, skipping...");
-        return;
+      console.log("Duplicate prevention triggered, skipping...");
+      return;
     }
     isSavingRef.current = true;
   
     console.log("Attempting to save sighting...");
-
+  
     if (!title || !witnessName || !witnessContact || !location) {
-        Alert.alert('Missing Information', 'Please fill in all fields and select a location.');
+      Alert.alert('Missing Information', 'Please fill in all fields and select a location.');
+      isSavingRef.current = false;
+      return;
+    }
+  
+    // Email validation check
+    if (!validateEmail(witnessContact)) {
+      Alert.alert('Invalid Email', 'Please enter a valid email address.');
+      isSavingRef.current = false;
+      return;
+    }
+  
+    try {
+      const storedSightings = await AsyncStorage.getItem('sightings');
+      const localSightings: Sighting[] = storedSightings ? JSON.parse(storedSightings) : [];
+  
+      const exists = localSightings.some(s => 
+        s.witnessName === witnessName &&
+        s.location.latitude === location.latitude &&
+        s.location.longitude === location.longitude &&
+        s.description === title
+      );
+  
+      if (exists) {
+        Alert.alert('Duplicate Entry', 'This sighting has already been added.');
         isSavingRef.current = false;
         return;
-    }
-
-    try {
-        const storedSightings = await AsyncStorage.getItem('sightings');
-        const localSightings: Sighting[] = storedSightings ? JSON.parse(storedSightings) : [];
-
-        const exists = localSightings.some(s => 
-            s.witnessName === witnessName &&
-            s.location.latitude === location.latitude &&
-            s.location.longitude === location.longitude &&
-            s.description === title
-        );
-
-        if (exists) {
-            Alert.alert('Duplicate Entry', 'This sighting has already been added.');
-            isSavingRef.current = false;
-            return;
-        }
-
-        const MIN_LOCAL_ID = 11;
-        const maxLocalId = localSightings.length > 0 ? Math.max(...localSightings.map(s => s.id)) : MIN_LOCAL_ID - 1;
-        const newSightingId = maxLocalId + 1;
-
-        const newSighting: Sighting = {
-            id: newSightingId,
-            witnessName,
-            location: {
-                latitude: location.latitude,
-                longitude: location.longitude,
-            },
-            description: title,
-            picture: photoUri || '',
-            dateTime: new Date().toISOString(),
-            witnessContact,
-            status: '',
-        };
-
-        localSightings.push(newSighting);
-        await AsyncStorage.setItem('sightings', JSON.stringify(localSightings));
-
-        Alert.alert('Success', 'Sighting added successfully!', [
-            {
-                text: 'OK',
-                onPress: () => {
-                    setTimeout(() => {
-                        navigation.goBack();
-                        isSavingRef.current = false;
-                    }, 100);
-                },
-            },
-        ]);
+      }
+  
+      const MIN_LOCAL_ID = 11;
+      const maxLocalId = localSightings.length > 0 ? Math.max(...localSightings.map(s => s.id)) : MIN_LOCAL_ID - 1;
+      const newSightingId = maxLocalId + 1;
+  
+      const newSighting: Sighting = {
+        id: newSightingId,
+        witnessName,
+        location: {
+          latitude: location.latitude,
+          longitude: location.longitude,
+        },
+        description: title,
+        picture: photoUri || '',
+        dateTime: new Date().toISOString(),
+        witnessContact,
+        status: '',
+      };
+  
+      localSightings.push(newSighting);
+      await AsyncStorage.setItem('sightings', JSON.stringify(localSightings));
+  
+      Alert.alert('Success', 'Sighting added successfully!', [
+        {
+          text: 'OK',
+          onPress: () => {
+            setTimeout(() => {
+              navigation.goBack();
+              isSavingRef.current = false;
+            }, 100);
+          },
+        },
+      ]);
     } catch (error) {
-        console.error('Error saving sighting:', error);
-        isSavingRef.current = false;
+      console.error('Error saving sighting:', error);
+      isSavingRef.current = false;
     }
-};
+  };
+  
 
   return (
       <View style={styles.container}>
@@ -239,9 +252,10 @@ export default function AddSighting() {
           </View>
         )}
   
+
         <CustomButton title="Save Sighting" onPress={(saveSighting)} />
-        <CustomButton title="Check Saved Sightings" onPress={(checkSavedSightings)} />
-        <CustomButton title="Clear Sightings" onPress={(clearStorage)} />
+        {/* <CustomButton title="Check Saved Sightings" onPress={(checkSavedSightings)} />
+        <CustomButton title="Clear Sightings" onPress={(clearStorage)} /> */}
       </View>
     );
   }

@@ -58,6 +58,7 @@ export default function TabTwoScreen() {
           >
             <Text style={styles.itemText}>{item.witnessName}</Text>
           </TouchableOpacity>
+          
         )}
       />
     </View>
