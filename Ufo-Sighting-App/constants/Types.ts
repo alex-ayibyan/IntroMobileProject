@@ -3,5 +3,6 @@ export type RootStackParamList = {
     Map: undefined;
     SightingDetail: { sightingId: number };
     AddSighting: undefined;
-  };
+    tabs:undefined;
+};
   

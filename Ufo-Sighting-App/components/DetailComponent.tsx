@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
+import { Text, StyleSheet, Image, ScrollView, Alert, TouchableOpacity } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 import { getSightings, Sighting } from '../constants/Api';
 
 interface SightingDetailProps {
@@ -8,21 +10,40 @@ interface SightingDetailProps {
 
 const DetailComponent = ({ sightingId }: SightingDetailProps) => {
   const [sighting, setSighting] = useState<Sighting | null>(null);
+  const [isLocalSighting, setIsLocalSighting] = useState<boolean>(false);
+  const navigation = useNavigation();
 
   useEffect(() => {
-    console.log('Sighting ID:', sightingId);
     const fetchSighting = async () => {
-      const sightings = await getSightings();
-      console.log("Fetched Sightings:", sightings);
-      const detail = sightings.find((s) => s.id === sightingId);
-      console.log("Sighting Detail:", detail);
+      const apiSightings = await getSightings();
+      const detail = apiSightings.find((s) => s.id === sightingId);
       setSighting(detail || null);
+
+      const storedSightings = await AsyncStorage.getItem('sightings');
+      const localSightings: Sighting[] = storedSightings ? JSON.parse(storedSightings) : [];
+      const foundInLocal = localSightings.some((s) => s.id === sightingId);
+
+      setIsLocalSighting(foundInLocal);
     };
-  
+
     fetchSighting();
   }, [sightingId]);
-  
-  
+
+  const deleteSighting = async () => {
+    try {
+      const storedSightings = await AsyncStorage.getItem('sightings');
+      const localSightings: Sighting[] = storedSightings ? JSON.parse(storedSightings) : [];
+
+      const updatedSightings = localSightings.filter((s) => s.id !== sightingId);
+      await AsyncStorage.setItem('sightings', JSON.stringify(updatedSightings));
+
+      Alert.alert('Deleted', 'Sighting has been removed!', [
+        { text: 'OK', onPress: () => navigation.goBack() },
+      ]);
+    } catch (error) {
+      console.error('Error deleting sighting:', error);
+    }
+  };
 
   if (!sighting) {
     return <Text>Loading...</Text>;
@@ -38,6 +59,12 @@ const DetailComponent = ({ sightingId }: SightingDetailProps) => {
       <Text style={styles.status}>Status: {sighting.status}</Text>
       <Text style={styles.description}>{sighting.description}</Text>
       <Text style={styles.contact}>Contact: {sighting.witnessContact}</Text>
+
+      {isLocalSighting && (
+        <TouchableOpacity style={styles.deleteButton} onPress={deleteSighting}>
+          <Text style={styles.deleteText}>Delete Sighting</Text>
+        </TouchableOpacity>
+      )}
     </ScrollView>
   );
 };
@@ -74,6 +101,18 @@ const styles = StyleSheet.create({
     color: 'black',
     marginTop: 12,
     fontWeight: 'bold',
+  },
+  deleteButton: {
+    backgroundColor: 'red',
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  deleteText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 });
 

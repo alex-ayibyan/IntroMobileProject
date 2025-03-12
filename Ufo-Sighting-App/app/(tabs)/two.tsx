@@ -40,9 +40,6 @@ export default function TabTwoScreen() {
     }, [loadSightings])
   );
 
-  if (loading) {
-    return <Text>Loading...</Text>;
-  }
 
   return (
     <View style={styles.container}>

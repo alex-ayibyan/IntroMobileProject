@@ -8,6 +8,7 @@ import { Camera, CameraView } from 'expo-camera';
 import * as FileSystem from 'expo-file-system';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { useForm, Controller } from 'react-hook-form';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 export default function AddSighting() {
   const { control, handleSubmit, formState: { errors } } = useForm();
@@ -22,6 +23,8 @@ export default function AddSighting() {
     { label: "Unconfirmed", value: "Unconfirmed" },
     { label: "Confirmed", value: "Confirmed" },
   ]);
+  const [date, setDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const cameraRef = useRef<CameraView>(null);
   const navigation = useNavigation();
@@ -60,16 +63,16 @@ export default function AddSighting() {
       Alert.alert('Missing Location', 'Please select a location on the map.');
       return;
     }
-    if (!photoUri){
+    if (!photoUri) {
       Alert.alert('Missing Picture', 'Please take a picture.');
       return;
     }
-      
+
     try {
       const storedSightings = await AsyncStorage.getItem('sightings');
       const localSightings: Sighting[] = storedSightings ? JSON.parse(storedSightings) : [];
 
-      const exists = localSightings.some(s => 
+      const exists = localSightings.some(s =>
         s.witnessName === data.witnessName &&
         s.location.latitude === location.latitude &&
         s.location.longitude === location.longitude &&
@@ -91,7 +94,7 @@ export default function AddSighting() {
         },
         description: data.description,
         picture: photoUri || '',
-        dateTime: new Date().toISOString(),
+        dateTime: date.toISOString(),
         status: status || '',
       };
 
@@ -104,6 +107,11 @@ export default function AddSighting() {
     } catch (error) {
       console.error('Error saving sighting:', error);
     }
+  };
+
+  const onDateChange = (event: any, selectedDate: Date | undefined) => {
+    setShowDatePicker(false);
+    setDate(selectedDate || date);
   };
 
   return (
@@ -180,8 +188,20 @@ export default function AddSighting() {
         )}
       />
       {errors.status && <Text style={styles.errorText}>{String(errors.status.message)}</Text>}
-      
 
+      <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+        <Text style={styles.dateText}>{date.toLocaleDateString()}</Text>
+      </TouchableOpacity>
+
+      {showDatePicker && (
+        <DateTimePicker
+          value={date}
+          mode="datetime"
+          display="spinner"
+          onChange={onDateChange}
+          textColor='#013a63'
+        />
+      )}
 
       <CustomButton title={isMapVisible ? "Close Map" : "Open Map"} onPress={() => setIsMapVisible(!isMapVisible)} />
       {isMapVisible && (
@@ -193,11 +213,10 @@ export default function AddSighting() {
       <CustomButton title={isCameraVisible ? "Close Camera" : "Open Camera"} onPress={() => setIsCameraVisible(!isCameraVisible)} />
       {isCameraVisible && hasPermission && (
         <>
-        <CustomButton title="Take Picture" onPress={takePicture} />
+          <CustomButton title="Take Picture" onPress={takePicture} />
           <View style={styles.cameraContainer}>
             <CameraView style={styles.camera} facing='back' ref={cameraRef} />
           </View>
-          
         </>
       )}
 
@@ -218,79 +237,91 @@ const CustomButton: React.FC<{ title: string; onPress: () => void }> = ({ title,
   </TouchableOpacity>
 );
 
-
-
+const styles = StyleSheet.create({
+  errorText: { color: 'red', marginBottom: 10 },
+  container: {
+    flex: 1,
+    backgroundColor: 'white',
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#fdfffc',
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#013a63',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 10,
+    color: '#fdfffc',
+    backgroundColor: '#6c757d',
+  },
+  dropdown: {
+    backgroundColor: "#6c757d",
+    borderColor: "#013a63",
+    borderRadius: 8,
+    marginBottom: 10,
+  },
+  dropdownContainer: {
+    backgroundColor: "#6c757d",
+  },
+  button: {
+    backgroundColor: '#013a63',
+    paddingVertical: 14,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginVertical: 5,
+  },
+  buttonText: {
+    color: '#fdfffc',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  map: {
+    height: 250,
+    marginBottom: 10,
+    borderRadius: 10,
+  },
+  cameraContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  camera: {
+    width: '100%',
+    height: 400,
+  },
+  imageContainer: {
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  photoText: {
+    fontSize: 16,
+    color: '#fdfffc',
+    marginBottom: 5,
+  },
+  photo: {
+    width: 100,
+    height: 100,
+    borderRadius: 8,
+  },
+  dateText: {
+    fontSize: 18, // Larger font size for better readability
+    color: '#013a63', // Consistent color with other elements
+    marginVertical: 15, // Add some space above and below the date text
+    paddingVertical: 10, // Padding for better touch targets
+    paddingHorizontal: 15, // Horizontal padding for a better layout
+    textAlign: 'center', // Center align the text
+    backgroundColor: '#fdfffc', // Add a contrasting background color
+    borderRadius: 10, // Rounded corners for a modern look
+    borderWidth: 1, // Border for a defined outline
+    borderColor: '#013a63', // Matching border color with the text
+    fontWeight: 'bold', // Make the text bold for emphasis
+  }
   
-  const styles = StyleSheet.create({
-    errorText: { color: 'red', marginBottom: 10 },
-    container: {
-      flex: 1,
-      backgroundColor: 'white',
-      padding: 20,
-    },
-    title: {
-      fontSize: 24,
-      fontWeight: 'bold',
-      color: '#fdfffc',
-      marginBottom: 15,
-      textAlign: 'center',
-    },
-    input: {
-      borderWidth: 1,
-      borderColor: '#013a63',
-      borderRadius: 8,
-      padding: 12,
-      marginBottom: 10,
-      color: '#fdfffc',
-      backgroundColor: '#6c757d',
-    },
-    dropdown: {
-      backgroundColor: "#6c757d",
-      borderColor: "#013a63",
-      borderRadius: 8,
-      marginBottom: 10,
-    },
-    dropdownContainer: {
-      backgroundColor: "#6c757d",
-    },
-    button: {
-      backgroundColor: '#013a63',
-      paddingVertical: 14,
-      borderRadius: 8,
-      alignItems: 'center',
-      marginVertical: 5,
-    },
-    buttonText: {
-      color: '#fdfffc',
-      fontSize: 16,
-      fontWeight: 'bold',
-    },
-    map: {
-      height: 250,
-      marginBottom: 10,
-      borderRadius: 10,
-    },
-    cameraContainer: {
-      justifyContent: 'center',
-      alignItems: 'center',
-      marginBottom: 10,
-    },
-    camera: {
-      width: '100%',
-      height: 400,
-    },
-    imageContainer: {
-      alignItems: 'center',
-      marginTop: 10,
-    },
-    photoText: {
-      fontSize: 16,
-      color: '#fdfffc',
-      marginBottom: 5,
-    },
-    photo: {
-      width: 100,
-      height: 100,
-      borderRadius: 8,
-    },
-  });
+});
+

@@ -16,11 +16,11 @@ export default function TabLayout() {
 
   return (
     <Tabs
-  screenOptions={{
-    tabBarActiveTintColor: colorScheme === 'light' ? '' : '#fdfffc', // tab icon
-    tabBarInactiveTintColor: colorScheme === 'light' ? '' : '#6c757d', // Grey for inactive tab
-    tabBarStyle: {
-      backgroundColor: colorScheme === 'light' ? '' : '#013a63', // tab bar
+    screenOptions={{
+      tabBarActiveTintColor: colorScheme === 'light' ? '' : '#fdfffc', // tab icon
+      tabBarInactiveTintColor: colorScheme === 'light' ? '' : '#6c757d', // grey for inactive tab
+      tabBarStyle: {
+        backgroundColor: colorScheme === 'light' ? '' : '#013a63', // tab bar
     },
     headerStyle: {
       backgroundColor: colorScheme === 'light' ? '' : '#013a63', // header bar
@@ -35,7 +35,7 @@ export default function TabLayout() {
   }}
 >
   <Tabs.Screen
-    name="index"
+    name="Map"
     options={{
       title: 'Map',
       tabBarIcon: ({ color }) => <TabBarIcon name="map" color={color} />,

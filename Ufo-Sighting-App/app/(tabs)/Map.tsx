@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { StyleSheet, View, ActivityIndicator, TouchableOpacity } from 'react-native';
 import MapComponent from '@/components/MapComponent';
 import { getSightings, Sighting } from '../../constants/Api';
@@ -35,10 +35,15 @@ const fetchAllSightings = async () => {
 export default function TabOneScreen() {
   const [sightings, setSightings] = useState<Sighting[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [mapRegion, setMapRegion] = useState<Region | null>(null);
   const navigation = useNavigation<NavigationProps>();
 
   const loadSightings = useCallback(async () => {
     setLoading(true);
+
+    const savedRegion = await AsyncStorage.getItem('lastMapRegion');
+    setMapRegion(savedRegion ? JSON.parse(savedRegion) : initialRegion);
+
     const allSightings = await fetchAllSightings();
     setSightings(allSightings);
     setLoading(false);
@@ -50,23 +55,33 @@ export default function TabOneScreen() {
     }, [loadSightings])
   );
 
+  const handleRegionChange = async (region: Region) => {
+    setMapRegion(region);
+    await AsyncStorage.setItem('lastMapRegion', JSON.stringify(region));
+  };
+
   const handleAddSighting = () => {
     navigation.navigate('AddSighting');
   };
 
   if (loading) {
-    return <ActivityIndicator size="large" color="#0000f" />;
+    return <ActivityIndicator size="large" color="#0000ff" />;
   }
 
   return (
     <View style={styles.container}>
-      <MapComponent initialRegion={initialRegion} sightings={sightings} />
+      {mapRegion && (
+        <MapComponent 
+          initialRegion={mapRegion} 
+          sightings={sightings} 
+          onRegionChange={handleRegionChange}
+        />
+      )}
 
       <TouchableOpacity style={styles.fab} onPress={handleAddSighting}>
         <Ionicons name="add" size={32} color="white" />
       </TouchableOpacity>
     </View>
-    
   );
 }
 
@@ -91,3 +106,6 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
   },
 });
+
+
+
