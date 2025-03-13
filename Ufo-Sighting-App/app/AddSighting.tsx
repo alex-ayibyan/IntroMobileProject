@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TextInput, Alert, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Alert, Image, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import MapView, { Marker, MapPressEvent } from 'react-native-maps';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
@@ -109,11 +109,6 @@ export default function AddSighting() {
     }
   };
 
-  const onDateChange = (event: any, selectedDate: Date | undefined) => {
-    setShowDatePicker(false);
-    setDate(selectedDate || date);
-  };
-
   return (
     <View style={styles.container}>
       <Controller
@@ -168,28 +163,21 @@ export default function AddSighting() {
       />
       {errors.description && <Text style={styles.errorText}>{String(errors.description.message)}</Text>}
 
-      <Controller
-        control={control}
-        name="status"
-        rules={{ required: 'Select a status' }}
-        render={({ field: { onChange, value } }) => (
-          <DropDownPicker
-            open={open}
-            value={value}
-            items={items}
-            setOpen={setOpen}
-            setValue={onChange}
-            setItems={setItems}
-            style={styles.dropdown}
-            textStyle={{ color: "#fdfffc" }}
-            placeholder="Select Status"
-            dropDownContainerStyle={styles.dropdownContainer}
-          />
-        )}
-      />
-      {errors.status && <Text style={styles.errorText}>{String(errors.status.message)}</Text>}
+      <DropDownPicker
+           open={open}
+           value={status}
+           items={items}
+           setOpen={setOpen}
+           setValue={setStatus}
+           setItems={setItems}
+           style={styles.dropdown}
+           textStyle={{ color: "#FFF" }}
+           placeholder="Select Status"
+           dropDownContainerStyle={styles.dropdownContainer}
+         />
 
-      <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+
+      <TouchableOpacity onPress={() => setShowDatePicker(!showDatePicker)}>
         <Text style={styles.dateText}>{date.toLocaleDateString()}</Text>
       </TouchableOpacity>
 
@@ -198,10 +186,16 @@ export default function AddSighting() {
           value={date}
           mode="datetime"
           display="spinner"
-          onChange={onDateChange}
+          onChange={(event, selectedDate) => {
+            if (selectedDate) {
+              setDate(selectedDate); 
+            }
+            setShowDatePicker(true);
+          }}
           textColor='#013a63'
         />
       )}
+
 
       <CustomButton title={isMapVisible ? "Close Map" : "Open Map"} onPress={() => setIsMapVisible(!isMapVisible)} />
       {isMapVisible && (
