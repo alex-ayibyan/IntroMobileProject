@@ -304,17 +304,17 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   dateText: {
-    fontSize: 18, // Larger font size for better readability
-    color: '#013a63', // Consistent color with other elements
-    marginVertical: 15, // Add some space above and below the date text
-    paddingVertical: 10, // Padding for better touch targets
-    paddingHorizontal: 15, // Horizontal padding for a better layout
-    textAlign: 'center', // Center align the text
-    backgroundColor: '#fdfffc', // Add a contrasting background color
-    borderRadius: 10, // Rounded corners for a modern look
-    borderWidth: 1, // Border for a defined outline
-    borderColor: '#013a63', // Matching border color with the text
-    fontWeight: 'bold', // Make the text bold for emphasis
+    fontSize: 18,
+    color: '#013a63',
+    marginVertical: 15,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    textAlign: 'center',
+    backgroundColor: '#fdfffc',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#013a63',
+    fontWeight: 'bold',
   }
   
 });
